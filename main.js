@@ -1,3 +1,10 @@
+const app = document.createElement("div");
+app.classList.add("app");
+
+document.body.append(app);
+
+const titleHTML = `<h1 class="title">RSS Virtual keyboard</h1>`;
+
 const keyHTML = `
   <div class="key">
     <span class="key__value">q</span>
@@ -6,14 +13,13 @@ const keyHTML = `
 
 const inputHTML = `
   <div class="container">
-    <input class="textarea" type="textarea" />
+    <textarea type="textarea" class="textarea" cols="50" rows="5"></textarea>
   </div>
 `;
 
-const keyboardContainer = document.querySelector(".keyboard-container");
-
-keyboardContainer.insertAdjacentHTML("afterbegin", inputHTML);
-keyboardContainer.insertAdjacentHTML("beforeend", keyHTML);
+app.insertAdjacentHTML("beforeend", titleHTML);
+app.insertAdjacentHTML("beforeend", inputHTML);
+app.insertAdjacentHTML("beforeend", keyHTML);
 
 const inputEl = document.querySelector(".textarea");
 
