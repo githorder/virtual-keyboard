@@ -6,6 +6,8 @@
 
 body {
   font-family: sans-serif;
+  font-weight: 600;
+  font-size: 12px;
 }
 
 .app {
@@ -14,7 +16,7 @@ body {
   justify-content: center;
   align-items: center;
   gap: 20px;
-  width: 600px;
+  width: 690px;
   margin: 0 auto;
 }
 
@@ -22,16 +24,58 @@ body {
   text-transform: uppercase;
 }
 
+.keyboard {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background-color: #555;
+  border: 5px solid #333;
+  border-radius: 5px;
+  width: 100%;
+  padding: 5px;
+}
+
+.key-row {
+  display: flex;
+  gap: 5px;
+  width: 100%;
+}
+
 .key {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
   padding: 15px;
   background-color: #333;
   color: #fff;
   border-radius: 5px;
   text-align: center;
   cursor: pointer;
+  transition: all 0.2s ease-out;
+  box-shadow: rgba(0, 0, 0, 0.17) 0px -23px 25px 0px inset,
+    rgba(0, 0, 0, 0.15) 0px -36px 30px 0px inset,
+    rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px,
+    rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px,
+    rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
 }
 
-.container {
+.key:hover {
+  background-color: #fff;
+  color: #333;
+}
+
+.key_active {
+  background-color: #fff;
+  color: #333;
+}
+
+.key_symbol {
+  flex-grow: 1;
+}
+
+.textarea-container {
   width: 100%;
   height: 200px;
 }
