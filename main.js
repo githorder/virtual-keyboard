@@ -171,7 +171,9 @@ const keystrokes = [
   },
 ];
 
-let lang = "en";
+let lang = localStorage.getItem("lang")
+  ? localStorage.getItem("lang")
+  : localStorage.setItem("lang", "en");
 let isCaps = false;
 
 const app = document.createElement("div");
@@ -244,6 +246,7 @@ document.addEventListener("keydown", (e) => {
 
   if (e.ctrlKey && e.altKey) {
     lang = lang === "en" ? "ru" : "en";
+    localStorage.setItem("lang", lang);
     let keyIndex = 0;
 
     for (let i = 0; i < keystrokes.length; i++) {
