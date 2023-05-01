@@ -148,6 +148,10 @@ const keystrokes = [
       ru: { val: "Alt", shiftVal: "Alt" },
     },
     Space: { en: { val: " ", shiftVal: " " }, ru: { val: " ", shiftVal: " " } },
+    AltRight: {
+      en: { val: "Alt", shiftVal: "Alt" },
+      ru: { val: "Alt", shiftVal: "Alt" },
+    },
     ArrowLeft: {
       en: { val: "◄", shiftVal: "◄" },
       ru: { val: "◄", shiftVal: "◄" },
@@ -184,9 +188,16 @@ const inputHTML = `
 
 const keyboardHTML = `<div class="keyboard"></div>`;
 
+const footerContainer = document.createElement("div");
+const footerTitleHTML = `<p>The keyboard is created in the Linux OS</p>`;
+const footerSubTitleHTML = `<p>To change language layout press Ctrl + Alt</p>`;
+footerContainer.insertAdjacentHTML("beforeend", footerTitleHTML);
+footerContainer.insertAdjacentHTML("beforeend", footerSubTitleHTML);
+
 app.insertAdjacentHTML("beforeend", titleHTML);
 app.insertAdjacentHTML("beforeend", inputHTML);
 app.insertAdjacentHTML("beforeend", keyboardHTML);
+app.append(footerContainer);
 
 const keyboardEl = document.querySelector(".keyboard");
 
@@ -312,6 +323,37 @@ document.addEventListener("keydown", (e) => {
     }
   } else if (e.key === "Tab") {
     inputEl.value += keyPressed ? "    " : "";
+  } else if (e.key === "Enter") {
+    inputEl.value += keyPressed ? "\n" : "";
+  } else if (e.key === "Backspace") {
+    let startPosition = inputEl.selectionStart;
+    let endPosition = inputEl.selectionEnd;
+
+    inputEl.value =
+      startPosition !== endPosition
+        ? inputEl.value.slice(0, startPosition) +
+          inputEl.value.slice(endPosition)
+        : inputEl.value.slice(0, startPosition - 1) +
+          inputEl.value.slice(startPosition);
+
+    inputEl.selectionEnd =
+      startPosition !== endPosition ? startPosition : startPosition - 1;
+  } else if (e.key === "Delete") {
+    let startPosition = inputEl.selectionStart;
+
+    inputEl.value =
+      inputEl.value.slice(0, startPosition) +
+      inputEl.value.slice(startPosition + 1);
+
+    inputEl.selectionEnd = startPosition;
+  } else if (e.key === "ArrowLeft") {
+    inputEl.selectionStart -= 1;
+    inputEl.selectionEnd -= 1;
+    inputEl.focus();
+  } else if (e.key === "ArrowRight") {
+    inputEl.selectionStart += 1;
+    inputEl.selectionEnd += 1;
+    inputEl.focus();
   } else if (
     !e.ctrlKey &&
     !e.altKey &&
@@ -319,18 +361,23 @@ document.addEventListener("keydown", (e) => {
     e.key !== "Backspace" &&
     e.key !== "Enter"
   ) {
-    inputEl.value += keyPressed ? keyPressed.textContent : "";
+    let startPosition = inputEl.selectionStart;
+    let endPosition = inputEl.selectionEnd;
+
+    inputEl.value = keyPressed
+      ? inputEl.value.slice(0, startPosition) +
+        keyPressed.textContent +
+        inputEl.value.slice(startPosition)
+      : "";
+
+    inputEl.selectionEnd = startPosition + 1;
   }
 });
 
 document.addEventListener("keyup", (e) => {
   const keyPressed = document.querySelector(`#key-${e.code}`);
-  const inputEl = document.querySelector(".textarea");
-  let caretStartPosition = inputEl.selectionStart;
 
-  if (e.key === "Backspace") {
-    inputEl.value = inputEl.value.slice(0, caretStartPosition - 1);
-  } else if (e.key === "CapsLock") {
+  if (e.key === "CapsLock") {
     !isCaps ? keyPressed?.classList.remove("key_active") : null;
     return;
   } else if (e.key === "Shift") {
@@ -358,12 +405,153 @@ document.addEventListener("keyup", (e) => {
         keyIndex++;
       }
     }
-  } else if (e.key === "Delete") {
-    let currentText = inputEl.value;
-    inputEl.value =
-      currentText.slice(0, caretStartPosition - 1) +
-      currentText.slice(caretStartPosition + 1);
   }
-
   keyPressed?.classList.remove("key_active");
+});
+
+document.querySelectorAll(".key").forEach((key) => {
+  key.addEventListener("mousedown", (e) => {
+    e.preventDefault();
+
+    const keyPressed = e.target;
+    keyPressed?.classList.add("key_active");
+
+    if (keyPressed.textContent === "CapsLock") {
+      let keyIndex = 0;
+
+      for (let i = 0; i < keystrokes.length; i++) {
+        keystrokesArr = Object.values(keystrokes[i]);
+        keyCodes = Object.keys(keystrokes[i]);
+
+        for (let j = 0; j < keystrokesArr.length; j++) {
+          document.querySelectorAll(".key")[keyIndex].textContent =
+            !isCaps &&
+            keystrokesArr[j][lang].val !== "Backspace" &&
+            keystrokesArr[j][lang].val !== "Del" &&
+            keystrokesArr[j][lang].val !== "Tab" &&
+            keystrokesArr[j][lang].val !== "CapsLock" &&
+            keystrokesArr[j][lang].val !== "Enter" &&
+            keystrokesArr[j][lang].val !== "Shift" &&
+            keystrokesArr[j][lang].val !== "Ctrl" &&
+            keystrokesArr[j][lang].val !== "Win" &&
+            keystrokesArr[j][lang].val !== "Alt"
+              ? keystrokesArr[j][lang].val.toUpperCase()
+              : keystrokesArr[j][lang].val;
+
+          keyIndex++;
+        }
+      }
+
+      isCaps = isCaps ? false : true;
+    } else if (keyPressed.textContent === "Shift") {
+      let keyIndex = 0;
+
+      for (let i = 0; i < keystrokes.length; i++) {
+        keystrokesArr = Object.values(keystrokes[i]);
+        keyCodes = Object.keys(keystrokes[i]);
+
+        for (let j = 0; j < keystrokesArr.length; j++) {
+          document.querySelectorAll(".key")[keyIndex].textContent =
+            isCaps &&
+            keystrokesArr[j][lang].val !== "Backspace" &&
+            keystrokesArr[j][lang].val !== "Del" &&
+            keystrokesArr[j][lang].val !== "Tab" &&
+            keystrokesArr[j][lang].val !== "CapsLock" &&
+            keystrokesArr[j][lang].val !== "Enter" &&
+            keystrokesArr[j][lang].val !== "Shift" &&
+            keystrokesArr[j][lang].val !== "Ctrl" &&
+            keystrokesArr[j][lang].val !== "Win" &&
+            keystrokesArr[j][lang].val !== "Alt"
+              ? keystrokesArr[j][lang].shiftVal.toLowerCase()
+              : keystrokesArr[j][lang].shiftVal;
+          keyIndex++;
+        }
+      }
+    } else if (keyPressed.textContent === "Tab") {
+      inputEl.value += keyPressed ? "    " : "";
+    } else if (keyPressed.textContent === "Enter") {
+      inputEl.value += keyPressed ? "\n" : "";
+    } else if (keyPressed.textContent === "Backspace") {
+      let startPosition = inputEl.selectionStart;
+      let endPosition = inputEl.selectionEnd;
+
+      inputEl.value =
+        startPosition !== endPosition
+          ? inputEl.value.slice(0, startPosition) +
+            inputEl.value.slice(endPosition)
+          : inputEl.value.slice(0, startPosition - 1) +
+            inputEl.value.slice(startPosition);
+
+      inputEl.selectionEnd =
+        startPosition !== endPosition ? startPosition : startPosition - 1;
+    } else if (keyPressed.textContent === "Del") {
+      let startPosition = inputEl.selectionStart;
+
+      inputEl.value =
+        inputEl.value.slice(0, startPosition) +
+        inputEl.value.slice(startPosition + 1);
+
+      inputEl.selectionEnd = startPosition;
+    } else if (keyPressed.textContent === "◄") {
+      inputEl.selectionStart -= 1;
+      inputEl.selectionEnd -= 1;
+      inputEl.focus();
+    } else if (keyPressed.textContent === "►") {
+      inputEl.selectionStart += 1;
+      inputEl.selectionEnd += 1;
+      inputEl.focus();
+    } else if (
+      keyPressed.textContent !== "Ctrl" &&
+      keyPressed.textContent !== "Alt" &&
+      keyPressed.textContent !== "Delete" &&
+      keyPressed.textContent !== "Backspace" &&
+      keyPressed.textContent !== "Enter" &&
+      keyPressed.textContent !== "Win"
+    ) {
+      let startPosition = inputEl.selectionStart;
+
+      inputEl.value = keyPressed
+        ? inputEl.value.slice(0, startPosition) +
+          keyPressed.textContent +
+          inputEl.value.slice(startPosition)
+        : "";
+
+      inputEl.selectionEnd = startPosition + 1;
+    }
+  });
+
+  key.addEventListener("mouseup", (e) => {
+    const keyPressed = e.target;
+
+    if (keyPressed.textContent === "CapsLock") {
+      !isCaps ? keyPressed?.classList.remove("key_active") : null;
+      return;
+    } else if (keyPressed.textContent === "Shift") {
+      let keyIndex = 0;
+
+      for (let i = 0; i < keystrokes.length; i++) {
+        keystrokesArr = Object.values(keystrokes[i]);
+        keyCodes = Object.keys(keystrokes[i]);
+
+        for (let j = 0; j < keystrokesArr.length; j++) {
+          document.querySelectorAll(".key")[keyIndex].textContent =
+            isCaps &&
+            keystrokesArr[j][lang].val !== "Backspace" &&
+            keystrokesArr[j][lang].val !== "Del" &&
+            keystrokesArr[j][lang].val !== "Tab" &&
+            keystrokesArr[j][lang].val !== "CapsLock" &&
+            keystrokesArr[j][lang].val !== "Enter" &&
+            keystrokesArr[j][lang].val !== "Shift" &&
+            keystrokesArr[j][lang].val !== "Ctrl" &&
+            keystrokesArr[j][lang].val !== "Win" &&
+            keystrokesArr[j][lang].val !== "Alt"
+              ? keystrokesArr[j][lang].val.toUpperCase()
+              : keystrokesArr[j][lang].val;
+
+          keyIndex++;
+        }
+      }
+    }
+    keyPressed?.classList.remove("key_active");
+  });
 });
